@@ -3,7 +3,7 @@ export type NFCresult = {
     error?: string
 }
 
-export async function scanNFC(cb: (s: NFCresult) => void) {
+export async function startScan(handler: (s: NFCresult) => void) {
     try {
         if ("NDEFReader" in window) {
             const ndef = new NDEFReader();
@@ -14,16 +14,16 @@ export async function scanNFC(cb: (s: NFCresult) => void) {
 
                 if (!uid) return null;
 
-                cb({ uid });
+                handler({ uid });
             };
 
             ndef.onreadingerror = () => {
-                cb({error: "NFC scan failed."});
+                handler({error: "NFC scan failed."});
             };
         } else {
-            cb({error: "Web NFC is not supported on this device."});
+            handler({error: "Web NFC is not supported on this device."});
         }
     } catch (error) {
-        cb({ error });
+        handler({ error });
     }
 }
