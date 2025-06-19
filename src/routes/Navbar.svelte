@@ -4,8 +4,8 @@
 </script>
 
 <div class="flex gap-8">
-    <a href={`${base}/registration`} class={`text-lg ${page.url.pathname.includes('/registration') ? "active" : ""}`}>Registration</a>
-    <a href={`${base}/verification`} class={`text-lg ${page.url.pathname.includes('/verification') ? "active" : ""}`}>Verification</a>
+    <a href={`${base}/registration`} class={`text-lg ${page.route.id === '/registration' ? "active" : ""}`}>Registration</a>
+    <a href={`${base}/verification`} class={`text-lg ${page.route.id === '/verification' ? "active" : ""}`}>Verification</a>
 </div>
 
 <style>

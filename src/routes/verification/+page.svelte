@@ -41,7 +41,7 @@
 </script>
 
 <main class="w-full">
-    <div class="w-90 mx-4 py-12 flex flex-col justify-center items-center gap-4 rounded-lg shadow-lg">
+    <div class="w-90 mx-auto py-12 flex flex-col justify-center items-center gap-4 rounded-lg shadow-lg">
         <div class="w-full p-12 flex flex-col items-center">
             <h1 class="text-xl font-bold">BeachBus Reader</h1>
             <Navbar />
