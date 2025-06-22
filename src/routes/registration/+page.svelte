@@ -6,7 +6,7 @@
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyWZ4XJ5zn129SnHm2XPNx6GkJerO_0EY8oiYBEgA7dFm4OAjJjkBsliJtgiRMTR8P3zA/exec';
 
     let nfc: NFCScanner | null = $state(null);
-    let message = $state("Tap to start");
+    let message = $state("");
     let error = $state(false);
 
     onMount(() => {
