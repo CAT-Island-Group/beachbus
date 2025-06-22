@@ -1,23 +1,17 @@
 <script lang='ts'>
-    import { onMount } from "svelte";
+    import { getContext, onDestroy } from "svelte";
     import Navbar from "../Navbar.svelte";
-    import { NFCScanner } from "../NFCScanner.svelte";
+    import type { NFCScanner } from "../NFCScanner.svelte";
 
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4ggNymlULCuGalRAcPdwweTPPZUOem74ZFWe0-8Q6fwDvoN8EM2kyMx02QWavrtzPUQ/exec';
 
-    let nfc: NFCScanner | null = $state(null);
-    let message = $state("");
-    let error = $state(false);
+    const nfc = getContext("nfc") as NFCScanner | undefined;
 
-    onMount(() => {
-        nfc = new NFCScanner(scanHandler);
-        if (nfc.error) {
-            message = "Web NFC not supported on this device.";
-            error = true;
-            return;
-        }
+    let message = $state(nfc ? "" : "Web NFC is not supported for this device.");
+    let error = $state(Boolean(nfc));
 
-        return () => nfc!.stop();
+    onDestroy(() => {
+        nfc?.stop();
     })
 
     const scanHandler = async (uid?: string) => {
@@ -60,7 +54,7 @@
                 {/if}
             </div>
             {#if !nfc?.error && !nfc?.isActive}
-                <button onclick={() => nfc!.start()} class="block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                <button onclick={() => nfc!.start(scanHandler)} class="block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                     Start NFC Scan
                 </button>
             {/if}
