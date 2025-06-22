@@ -8,7 +8,7 @@
     const nfc = getContext("nfc") as NFCScanner | undefined;
 
     let message = $state(nfc ? "" : "Web NFC is not supported for this device.");
-    let error = $state(Boolean(nfc));
+    let error = $state(nfc === undefined);
 
     onDestroy(() => {
         nfc?.stop();
@@ -53,8 +53,8 @@
                     <span class="relative inline-flex rounded-full size-full bg-sky-400"></span>
                 {/if}
             </div>
-            {#if !nfc?.error && !nfc?.isActive}
-                <button onclick={() => nfc!.start(scanHandler)} class="block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            {#if nfc && !nfc.error && !nfc.isActive}
+                <button onclick={() => nfc.start(scanHandler)} class="block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                     Start NFC Scan
                 </button>
             {/if}
