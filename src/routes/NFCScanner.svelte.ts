@@ -6,20 +6,17 @@ export class NFCScanner {
     isPending = $state(false);
     error = $state(false);
 
-    constructor() {
+    constructor(handler: (uid?: string) => Promise<void>) {
         this.#controller = new AbortController();
         this.#signal = this.#controller.signal;
-        
-        if ("NDEFReader" in window) {
-            this.#ndef = new NDEFReader();
-        } else {
+
+        if (!("NDEFReader" in window)) {
             this.#ndef = null;
             this.error = true;
+            return;
         }
-    }
 
-    async start(handler: (uid?: string) => Promise<void>) {
-        if (!this.#ndef || this.isActive) return;
+        this.#ndef = new NDEFReader();
 
         this.#ndef.onreading = async (event) => {
             this.isPending = true;
@@ -37,6 +34,10 @@ export class NFCScanner {
             await handler();
             this.isPending = false;
         }
+    }
+
+    async start() {
+        if (!this.#ndef || this.isActive) return;
 
         try {
             await this.#ndef.scan({ signal: this.#signal });
