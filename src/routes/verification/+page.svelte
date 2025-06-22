@@ -16,6 +16,8 @@
             message = "Web NFC is not supported for this device.";
             error = true;
         }
+
+        return () => nfc?.stop();
     })
 
     const scanHandler = async (uid?: string) => {
