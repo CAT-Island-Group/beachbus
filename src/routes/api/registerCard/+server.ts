@@ -21,7 +21,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
             .onConflictDoNothing()
             .returning();
 
-            if (row.length) {
+        if (row.length) {
             const reader_id = cookies.get("id")!;
             const log = {
                 type: "Registration" as const,
