@@ -25,7 +25,7 @@ export const readersTable = pgTable('readers', {
 export const cardLog = pgTable('card_log', {
 	id: uuid().defaultRandom().primaryKey(),
 	type: log_type(),
-	card_id: varchar('card_id', { length: 11 }).references(() => cardsTable.uid),
-	reader_id: uuid().references(() => readersTable.id),
+	card_id: varchar('card_id', { length: 11 }).references(() => cardsTable.uid).notNull(),
+	reader_id: uuid().references(() => readersTable.id).notNull(),
 	timestamp: timestamp('timestamp', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
 });
