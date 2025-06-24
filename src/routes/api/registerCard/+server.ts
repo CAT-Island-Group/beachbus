@@ -4,7 +4,7 @@ import { cardsTable, cardLog } from "$lib/server/db/schema";
 
 type UserType = "Regular" | "Employee";
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, cookies }) => {
     try {
         const { uid, type, duration }: { uid: string, type: UserType, duration: string} = await request.json();
 
@@ -21,11 +21,12 @@ export const POST: RequestHandler = async ({ request }) => {
             .onConflictDoNothing()
             .returning();
 
-        if (row.length) {
+            if (row.length) {
+            const reader_id = cookies.get("id")!;
             const log = {
                 type: "Registration" as const,
                 card_id: uid,
-                reader_id: "fuck",
+                reader_id,
             }
 
             await db.insert(cardLog).values(log);
