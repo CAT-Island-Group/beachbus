@@ -2,7 +2,7 @@ import { pgTable, pgEnum, varchar, serial, integer, timestamp, uuid } from 'driz
 
 export const type = pgEnum('type', ['Regular', 'Employee']);
 export const status = pgEnum('status', ['Registered', 'Active', 'Used']);
-export const log_type = pgEnum('log_type', ['Registration', 'Activation', 'Boarding', 'Checker']);
+export const log_type = pgEnum('log_type', ['Registration', 'Activation', 'Boarding']);
 
 export const cardsTable = pgTable('cards', {
 	uid: varchar('uid', { length: 11 }).primaryKey(),

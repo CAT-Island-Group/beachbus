@@ -1,9 +1,6 @@
 <script lang='ts'>
     import { onMount } from "svelte";
-    import Navbar from "../Navbar.svelte";
     import { NFCScanner } from "../NFCScanner.svelte";
-
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyWZ4XJ5zn129SnHm2XPNx6GkJerO_0EY8oiYBEgA7dFm4OAjJjkBsliJtgiRMTR8P3zA/exec';
 
     let message = $state("");
     let error = $state(false);
@@ -30,23 +27,30 @@
             return;
         }
 
-        const response = await fetch(`${GOOGLE_SCRIPT_URL}?uid=${encodeURIComponent(uid)}&duration=${type === "Regular" ? duration : type}`);
-        const result = await response.text();
+        try {
+            const response = await fetch("/api/registerCard", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ uid, type, duration })
+            });
 
-        if (result.includes("status=registered")) {
-            message = "✅ New card registered";
-            error = false;
-            return;
+            if (response.ok) {
+                const card = await response.json();
+                if (card) {
+                    message = "✅ Card registration successful.";
+                    error = false;
+                } else {
+                    message = "⚠️ Card already registered.";
+                    error = true;
+                }
+            } else {
+                throw new Error("fetch error");
+            }
+        } catch (e) {
+            console.error(e);
+            message = "❌ An error occurred.";
+            error = true;
         }
-
-        if (result.includes("status=re_registered")) {
-            message = "🔁 Expired card re-registered";
-        } else if (result.includes("status=already_registered")) {
-            message = "⚠️ Card is already active";
-        } else {
-            message = `❌ Unknown response: ${result}`;
-        }
-        error = true;
     };
 
 </script>
@@ -55,7 +59,7 @@
     <div class="w-90 mx-auto py-12 flex flex-col justify-center items-center gap-4 rounded-lg shadow-lg">
         <div class="w-full p-12 flex flex-col items-center">
             <h1 class="text-xl font-bold">BeachBus Reader</h1>
-            <Navbar />
+            <h2 class="border-b border-sky-600 text-sky-600 text-lg font-bold">Registration</h2>
             <div class="relative my-16 flex justify-center items-center size-40">
                 {#if nfc?.isPending}
                     <svg class="absolute size-16 animate-spin text-sky-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
