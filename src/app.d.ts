@@ -23,6 +23,14 @@ declare global {
 	// This type definitions referenced to WebIDL.
 	// https://w3c.github.io/web-nfc/#actual-idl-index
 
+	interface Card {
+        uid: string,
+        type: "Regular" | "Employee",
+        usage: number,
+        status: "Registered" | "Active" | "Used",
+        expiresAt?: Date
+    }
+
 	interface Window {
 		NDEFMessage: NDEFMessage
 	}

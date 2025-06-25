@@ -1,53 +1,54 @@
 <script lang='ts'>
     import { onMount } from "svelte";
     import { NFCScanner } from "../NFCScanner.svelte";
+    import CardInfo from "../CardInfo.svelte";
 
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4ggNymlULCuGalRAcPdwweTPPZUOem74ZFWe0-8Q6fwDvoN8EM2kyMx02QWavrtzPUQ/exec';
-
-    let message = $state("");
+    let nfc: NFCScanner | null = $state(null);
     let error = $state(false);
 
-    let nfc: NFCScanner | undefined = $state();
-
     onMount(() => {
-        nfc = new NFCScanner(scanHandler);
-        if (nfc.error) {
-            message = "Web NFC is not supported for this device.";
-            error = true;
-        }
+        nfc = ("NDEFReader" in window) ? new NFCScanner(scanHandler) : null;
 
-        return () => nfc?.stop();
+        if (nfc) return () => nfc!.stop();
     })
 
+    let card: Card | null = $state(null);
     const scanHandler = async (uid?: string) => {
+        card = null;
         if (!uid) {
-            message = "An error occurred.";
             error = true;
             return;
         }
 
-        const response = await fetch(`${GOOGLE_SCRIPT_URL}?uid=${encodeURIComponent(uid)}`);
-        const { status, expiry } = await response.json();
+        try {
+            const response = await fetch("/api/checker", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ uid })
+            });
 
-        if (status === 'valid') {
-            message = `✅ VALID - Expires: ${expiry}`;
-            error = false;
-            return;
+            if (!response.ok) {
+                throw new Error("fetch error");
+            }
+
+            const result: Card[] = await response.json();
+            if (!result.length) {
+                throw new Error("not found");
+            } else {
+                card = result[0];
+            }
+
+        } catch (e) {
+            console.error(e);
+            error = true;
         }
-        
-        if (status === 'expired') {
-            message = `❌ EXPIRED - Expired: ${expiry}`;
-        } else {
-            message = `⚠️ NOT FOUND`;
-        }
-        error = true;
     };
 
 </script>
 
 <main class="w-full">
     <div class="w-90 mx-auto py-12 flex flex-col justify-center items-center gap-4 rounded-lg shadow-lg">
-        <div class="w-full p-12 flex flex-col items-center">
+        <div class="w-full p-8 flex flex-col items-center">
             <h1 class="text-xl font-bold">BeachBus Reader</h1>
             <h2 class="border-b border-sky-600 text-sky-600 text-lg font-bold">Checker</h2>
             <div class="relative my-16 flex justify-center items-center size-40">
@@ -58,12 +59,24 @@
                     <span class="relative inline-flex rounded-full size-full bg-sky-400"></span>
                 {/if}
             </div>
-            {#if nfc && !nfc.error && !nfc.isActive}
-                <button onclick={() => nfc!.start()} class="block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            {#if !nfc}
+                <p class="text-red-600">
+                    Web NFC is not supported on this device.
+                </p>
+            {:else if !nfc.error && !nfc.isActive}
+                <button onclick={() => nfc!.start()} class="block px-4 py-2 rounded text-white bg-blue-500 hover:bg-blue-600">
                     Start NFC Scan
                 </button>
+            {:else}
+                <button onclick={() => nfc!.stop()} class="block px-4 py-2 rounded text-white bg-red-500 hover:bg-red-600">
+                    Stop NFC Scan
+                </button>
             {/if}
-            <p class={`${error ? 'text-red-600' : 'text-green-600'}`}>{message}</p>
+            {#if card}
+                <CardInfo {card}/>
+            {:else if error}
+                <p class="text-red-600">⚠️ Card not found.</p>
+            {/if}
         </div>
     </div>
 </main>
