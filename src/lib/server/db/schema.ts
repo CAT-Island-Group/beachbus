@@ -6,9 +6,9 @@ export const log_type = pgEnum('log_type', ['Registration', 'Activation', 'Board
 
 export const cardsTable = pgTable('cards', {
 	uid: varchar('uid').primaryKey(),
-	type: type(),
+	type: type().notNull(),
 	usage: integer('usage').notNull(),
-	status: status(),
+	status: status().notNull(),
 	expiresAt: timestamp('expiresAt', {
 		withTimezone: true,
 		mode: 'date',
@@ -24,7 +24,7 @@ export const readersTable = pgTable('readers', {
 
 export const cardLog = pgTable('card_log', {
 	id: uuid().defaultRandom().primaryKey(),
-	type: log_type(),
+	type: log_type().notNull(),
 	card_id: varchar('card_id').references(() => cardsTable.uid).notNull(),
 	reader_id: uuid().references(() => readersTable.id).notNull(),
 	timestamp: timestamp('timestamp', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
