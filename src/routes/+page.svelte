@@ -41,7 +41,7 @@
             <h1 class="text-xl font-bold">BeachBus Reader</h1>
         </div>
         <h2 class="border-b border-sky-600 text-sky-600 text-lg font-bold">Configuration</h2>
-        <form onsubmit={handleSubmit} class="pt-12 flex flex-col gap-4">
+        <form onsubmit={handleSubmit} class="py-12 flex flex-col gap-4">
             <!-- Mode Selection -->
             <label>
                 Device Mode
@@ -71,7 +71,7 @@
                 <input name="name" bind:value={name} class="px-2 py-1 border" placeholder='"Lobby"' autocomplete="off" required>
             </label>
             
-            <button class="block bg-blue-500 text-white mt-10 px-4 py-2 rounded hover:bg-blue-600">
+            <button class="block mt-10 px-4 py-2 rounded text-white bg-blue-500 hover:bg-blue-600">
                 Complete
             </button>
         </form>
