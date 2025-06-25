@@ -1,5 +1,5 @@
 export class NFCScanner {
-    #ndef: NDEFReader | null;
+    #ndef: NDEFReader;
     #controller: AbortController;
     #signal: AbortSignal;
     isActive = $state(false);
@@ -9,12 +9,6 @@ export class NFCScanner {
     constructor(handler: (uid?: string) => Promise<void>) {
         this.#controller = new AbortController();
         this.#signal = this.#controller.signal;
-
-        if (!("NDEFReader" in window)) {
-            this.#ndef = null;
-            this.error = true;
-            return;
-        }
 
         this.#ndef = new NDEFReader();
 

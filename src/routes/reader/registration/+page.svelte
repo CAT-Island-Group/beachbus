@@ -5,16 +5,16 @@
     let message = $state("");
     let error = $state(false);
 
-    let nfc: NFCScanner | undefined = $state();
+    let nfc: NFCScanner | null = $state(null);
 
     onMount(() => {
-        nfc = new NFCScanner(scanHandler);
-        if (nfc.error) {
+        nfc = ("NDEFReader" in window) ? new NFCScanner(scanHandler) : null;
+        if (!nfc) {
             message = "Web NFC is not supported for this device.";
             error = true;
         }
 
-        return () => nfc?.stop();
+        if (nfc) return () => nfc!.stop();
     })
 
     let type = $state("Regular");
@@ -68,7 +68,7 @@
                     <span class="relative inline-flex rounded-full size-full bg-sky-400"></span>
                 {/if}
             </div>
-            {#if nfc && !nfc.error && !nfc.isActive}
+            {#if nfc && !nfc.isActive}
                 <button onclick={() => nfc!.start()} class="block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                     Start NFC Scan
                 </button>
