@@ -5,7 +5,7 @@ import { eq } from 'drizzle-orm';
 
 export const handle: Handle = async ({ event, resolve }) => {
     const { url, cookies, locals } = event;
-	if (url.pathname === "/reader/checker" || url.pathname === "/api/registerReader") {
+	if (url.pathname === "/reader/checker" || url.pathname === "/api/checker" || url.pathname === "/api/registerReader") {
 		return await resolve(event);
 	}
 
