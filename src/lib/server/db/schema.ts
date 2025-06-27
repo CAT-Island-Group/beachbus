@@ -11,7 +11,7 @@ export const cardsTable = pgTable('cards', {
 	status: status().notNull(),
 	expiresAt: timestamp('expiresAt', {
 		withTimezone: true,
-		mode: 'date',
+		mode: 'string',
 	}),
 });
 

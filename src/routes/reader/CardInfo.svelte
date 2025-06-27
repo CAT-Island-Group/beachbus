@@ -5,12 +5,13 @@
             type: "Regular" | "Employee",
             usage: number,
             status: "Registered" | "Active" | "Used",
-            expiresAt?: Date
+            expiresAt?: string
         }
     }
 
     const { card }: Props = $props();
-    const { type, usage, status, expiresAt } = card;
+    const { type, usage, status, expiresAt: expiryStr } = card;
+    const expiresAt = expiryStr ? new Date(expiryStr) : null;
     const error = card.type === "Employee" && card.usage === 0 || expiresAt && Date.now() > expiresAt.valueOf();
 </script>
 
@@ -18,7 +19,7 @@
     <div class="col-span-1">
         <p>Pass Info</p>
         <p class="text-lg font-bold">{type}</p>
-        <p class="text-lg font-bold">{usage} {type === "Regular" ? `Day${usage > 1 ? 's' : ''}` : "Left"}</p>
+        <p class="text-lg font-bold">{usage} {`${type === "Regular" ? "Day" : "Use"}${usage > 1 ? "s" : ""}`}</p>
         <br>
         <p>Expiry</p>
         <p class="text-lg font-bold">

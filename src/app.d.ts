@@ -28,7 +28,7 @@ declare global {
         type: "Regular" | "Employee",
         usage: number,
         status: "Registered" | "Active" | "Used",
-        expiresAt?: Date
+        expiresAt?: string
     }
 
 	interface Window {
