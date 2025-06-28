@@ -26,8 +26,7 @@
                 throw new Error("Server error");
             }
 
-            localStorage.setItem("config", JSON.stringify({ mode, stop, name }));
-            goto("/" + mode.toLowerCase());
+            goto("/reader/" + mode.toLowerCase());
         } catch (e) {
             console.error(e);
         }
