@@ -5,32 +5,43 @@ import { eq } from 'drizzle-orm';
 
 export const handle: Handle = async ({ event, resolve }) => {
     const { url, cookies, locals } = event;
-	if (url.pathname === "/reader/checker" || url.pathname === "/api/checker" || url.pathname === "/api/registerReader") {
-		return await resolve(event);
-	}
+
+    if (url.pathname === "/reader/checker" || url.pathname === "/api/checker") {
+        return await resolve(event);
+    }
+
+    let mode = locals.config?.mode.toLowerCase();
+	if (mode) {
+        if (url.pathname === "/" || url.pathname === "/api/registerReader" || url.pathname.endsWith(mode)) {
+            return await resolve(event);
+        } else {
+            redirect(303, "/reader/" + mode);
+        }
+    }
 
     const readerId = cookies.get("id");
     if (!readerId) { // unregistered device
-        if (url.pathname !== "/") redirect(303, "/");
-        else return await resolve(event);
+        if (url.pathname === "/" || url.pathname === "/api/registerReader") {
+            return await resolve(event);
+        } else {
+            redirect(303, "/reader/checker");
+        }
     }
 
 	const row = await db.select().from(readersTable).where(eq(readersTable.id, readerId));
-    if (!row.length) { // possibly malicious req
-        if (url.pathname !== "/") redirect(303, "/");
-    }
-
-    // device is registered atp, can safely resolve api req
-    if (url.pathname.startsWith("/api")) {
-        return await resolve(event);
+    if (!row.length) { // device no longer valid? has cookie but not in db
+        redirect(303, "/reader/checker");
     }
 
     // do something with config
     const { id, ...config } = row[0];
-    const targetUrl = "/reader/" + config.mode.toLowerCase();
     locals.config = config;
-    if (url.pathname === "/" || url.pathname === targetUrl) {
+    mode = config.mode.toLowerCase();
+
+    if (url.pathname === "/" || url.pathname === "/api/registerReader" || url.pathname.endsWith(mode)) {
         return await resolve(event);
+    } else {
+        redirect(303, "/reader/" + mode);
     }
-    redirect(303, targetUrl);
+
 };
