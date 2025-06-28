@@ -6,13 +6,13 @@ import { eq } from 'drizzle-orm';
 export const handle: Handle = async ({ event, resolve }) => {
     const { url, cookies, locals } = event;
 
-    if (url.pathname === "/reader/checker" || url.pathname === "/api/checker") {
+    if (url.pathname === "/reader/checker" || url.pathname.startsWith("/api/")) {
         return await resolve(event);
     }
 
     let mode = locals.config?.mode.toLowerCase();
 	if (mode) {
-        if (url.pathname === "/" || url.pathname === "/api/registerReader" || url.pathname.endsWith(mode)) {
+        if (url.pathname === "/" || url.pathname.endsWith(mode)) {
             return await resolve(event);
         } else {
             redirect(303, "/reader/" + mode);
@@ -21,7 +21,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
     const readerId = cookies.get("id");
     if (!readerId) { // unregistered device
-        if (url.pathname === "/" || url.pathname === "/api/registerReader") {
+        if (url.pathname === "/") {
             return await resolve(event);
         } else {
             redirect(303, "/reader/checker");
@@ -38,7 +38,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     locals.config = config;
     mode = config.mode.toLowerCase();
 
-    if (url.pathname === "/" || url.pathname === "/api/registerReader" || url.pathname.endsWith(mode)) {
+    if (url.pathname === "/" || url.pathname.endsWith(mode)) {
         return await resolve(event);
     } else {
         redirect(303, "/reader/" + mode);
