@@ -14,6 +14,10 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 
         const card = row[0];
 
+        if (card.status === "Registered") {
+            return json(row);
+        }
+
         if (card.status === "Active") {
             const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * (card.type === "Regular" ? card.usage : 30)).toISOString();
             row = await db.update(cardsTable)
