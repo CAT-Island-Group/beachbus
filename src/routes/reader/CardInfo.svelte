@@ -12,7 +12,7 @@
     const { card }: Props = $props();
     const { type, usage, status, expiresAt: expiryStr } = card;
     const expiresAt = expiryStr ? new Date(expiryStr) : null;
-    const error = card.type === "Employee" && card.usage === 0 || expiresAt && Date.now() > expiresAt.valueOf();
+    const error = card.type === "Employee" && card.usage === 0 || expiresAt && Date.now() > expiresAt.valueOf() || status === "Registered";
 </script>
 
 <div class="mt-8 w-full h-48 grid grid-cols-2 text-center">
