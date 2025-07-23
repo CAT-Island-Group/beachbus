@@ -1,5 +1,5 @@
 import { db } from "$lib/server/db";
-import { readersTable } from "$lib/server/db/schema";
+import * as table from "$lib/server/db/schema";
 import { error, type RequestHandler } from "@sveltejs/kit";
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
@@ -15,10 +15,10 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
             location
         }
 
-        const row = await db.insert(readersTable)
+        const row = await db.insert(table.reader)
             .values({ ...(id) && { id }, ...reader }) // short circuit AND
-            .onConflictDoUpdate({ target: readersTable.id, set: reader })
-            .returning({ id: readersTable.id });
+            .onConflictDoUpdate({ target: table.reader.id, set: reader })
+            .returning({ id: table.reader.id });
 
         id = row[0].id;
         cookies.set("id", id, {

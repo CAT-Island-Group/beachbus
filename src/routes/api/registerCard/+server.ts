@@ -1,6 +1,6 @@
 import { error, json, type RequestHandler } from "@sveltejs/kit";
 import { db } from "$lib/server/db";
-import { cardsTable, cardLog } from "$lib/server/db/schema";
+import * as table from "$lib/server/db/schema";
 
 type UserType = "Regular" | "Employee";
 
@@ -16,20 +16,20 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
         }
 
         const row = await db
-            .insert(cardsTable)
+            .insert(table.card)
             .values(card)
             .onConflictDoNothing()
             .returning();
 
         if (row.length) {
-            const reader_id = cookies.get("id")!;
+            const readerId = cookies.get("id")!;
             const log = {
                 type: "Registration" as const,
-                card_id: uid,
-                reader_id,
+                cardId: uid,
+                readerId,
             }
 
-            await db.insert(cardLog).values(log);
+            await db.insert(table.cardLog).values(log);
             return json(row[0]);
         }
     } catch (e) {
