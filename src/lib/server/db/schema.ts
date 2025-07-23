@@ -5,8 +5,8 @@ export const status = pgEnum('status', ['Registered', 'Active', 'Used']);
 export const log_type = pgEnum('log_type', ['Registration', 'Activation', 'Boarding']);
 export const role = pgEnum('role', ['Admin', 'Activation', 'Boarding']);
 
-export const card = pgTable('cards', {
-	uid: uuid().primaryKey(),
+export const card = pgTable('card', {
+	uid: text('uid').primaryKey(),
 	type: type().notNull(),
 	usage: integer('usage').notNull(),
 	status: status().notNull(),
@@ -16,7 +16,7 @@ export const card = pgTable('cards', {
 	}),
 });
 
-export const reader = pgTable('readers', {
+export const reader = pgTable('reader', {
 	id: uuid().defaultRandom().primaryKey(),
 	mode: text('mode').notNull(),
 	name: text('name').notNull(),
@@ -30,7 +30,7 @@ export const reader = pgTable('readers', {
 export const cardLog = pgTable('card_log', {
 	id: uuid().defaultRandom().primaryKey(),
 	type: log_type().notNull(),
-	cardId: uuid().references(() => card.uid).notNull(),
+	cardId: text('cardId').references(() => card.uid).notNull(),
 	readerId: uuid().references(() => reader.id).notNull(),
 	timestamp: timestamp('timestamp', {
 		withTimezone: true,
