@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db';
-import { readersTable } from '$lib/server/db/schema';
+import * as table from '$lib/server/db/schema';
 import { redirect, type Handle } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 
@@ -28,7 +28,7 @@ export const handle: Handle = async ({ event, resolve }) => {
         }
     }
 
-	const row = await db.select().from(readersTable).where(eq(readersTable.id, readerId));
+	const row = await db.select().from(table.reader).where(eq(table.reader.id, readerId));
     if (!row.length) { // device no longer valid? has cookie but not in db
         redirect(303, "/reader/checker");
     }
