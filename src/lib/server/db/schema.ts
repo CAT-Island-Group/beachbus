@@ -38,6 +38,12 @@ export const cardLog = pgTable('card_log', {
 	}).defaultNow().notNull(),
 });
 
+export const org = pgTable('organization', {
+	id: uuid().defaultRandom().primaryKey(),
+	name: text('name').notNull(),
+	cardCount: integer('card_count').default(0).notNull()
+})
+
 export const user = pgTable('user', {
 	id: uuid().defaultRandom().primaryKey(),
 	username: text('username').notNull().unique(),
@@ -53,12 +59,6 @@ export const user = pgTable('user', {
 		mode: 'date'
 	}).defaultNow().notNull()
 });
-
-export const org = pgTable('organization', {
-	id: uuid().defaultRandom().primaryKey(),
-	name: text('name').notNull(),
-	cardCount: integer('card_count').default(0).notNull()
-})
 
 export const session = pgTable('session', {
 	id: text('id').primaryKey(),
