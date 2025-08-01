@@ -35,10 +35,10 @@ export class NFCScanner {
 
         try {
             await this.#ndef.scan({ signal: this.#signal });
+            this.isActive = true;
         } catch (error) {
             console.error(error);
         }
-        this.isActive = true;
     }
 
     stop() {
