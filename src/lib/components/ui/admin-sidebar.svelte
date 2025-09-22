@@ -50,7 +50,7 @@
         </Sidebar.Group>
     </Sidebar.Content>
     <Sidebar.Footer>
-        <form method="POST" action="?/login/logout" class="w-full flex flex-col">
+        <form method="POST" action="/login?/logout" class="w-full flex flex-col">
             <Button>Sign Out</Button>
         </form>
     </Sidebar.Footer>
