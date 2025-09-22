@@ -53,7 +53,7 @@ export const actions = {
 
         return { success: true };
     },
-    unregister: async ({ request, locals, cookies}) => {
+    unregister: async ({ request, locals }) => {
         if (!locals.user) {
             return fail(401);
         }
