@@ -9,7 +9,7 @@ const DAY_IN_MS = 1000 * 60 * 60 * 24;
 export const load: PageServerLoad = ({ locals }) => {
     const { config } = locals;
     if (!config) {
-        redirect(303, '/admin/readers');
+        redirect(303, '/admin');
     }
     return { config };
 }
