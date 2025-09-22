@@ -5,9 +5,9 @@ declare global {
 		// interface Error {}
 		interface Locals {
 			config: {
-				mode: string,
-				location: string,
-				name: string
+				id: string,
+				mode: import('$lib/consts').READER_MODE,
+				location: import('$lib/consts').BUS_STOP,
 			} | undefined;
 			user: import('$lib/server/auth').SessionValidationResult['user'];
 			session: import('$lib/server/auth').SessionValidationResult['session']
@@ -26,11 +26,10 @@ declare global {
 	// https://w3c.github.io/web-nfc/#actual-idl-index
 
 	interface Card {
-        uid: string,
         type: "Regular" | "Employee",
         usage: number,
         status: "Registered" | "Active" | "Used",
-        expiresAt?: string
+        expiresAt: Date | null
     }
 
 	interface Window {

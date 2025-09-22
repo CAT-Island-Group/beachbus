@@ -1,9 +1,10 @@
-import type { RequestEvent } from '@sveltejs/kit';
+import { redirect, type RequestEvent } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import { sha256 } from '@oslojs/crypto/sha2';
 import { encodeHexLowerCase } from '@oslojs/encoding';
 import { db } from '$lib/server/db';
 import * as table from '$lib/server/db/schema';
+import { getRequestEvent } from '$app/server';
 
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
 
@@ -34,13 +35,10 @@ export async function validateSessionToken(token: string) {
 		user: {
 			id: table.user.id,
 			username: table.user.username,
-			org: table.org.name,
-			role: table.user.role
 		},
 		session: table.session
 	}).from(table.session)
 	.innerJoin(table.user, eq(table.session.userId, table.user.id))
-	.innerJoin(table.org, eq(table.user.orgId, table.org.id))
 	.where(eq(table.session.id, sessionId));
 
 	if (!result) {
@@ -83,4 +81,12 @@ export function setSessionTokenCookie(
 
 export function deleteSessionTokenCookie(event: RequestEvent) {
 	event.cookies.delete(sessionCookieName, { path: '/' });
+}
+
+export function requireLogin() {
+	const event = getRequestEvent();
+	if (!event.locals.user) {
+		return redirect(303, '/login');
+	}
+	return event.locals.user;
 }

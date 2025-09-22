@@ -3,8 +3,10 @@ import * as table from '$lib/server/db/schema';
 import { redirect, type Handle } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import * as auth from "$lib/server/auth";
+import { sequence } from '@sveltejs/kit/hooks';
 
 const handleAuth: Handle = async ({ event, resolve }) => {
+    
 	const sessionToken = event.cookies.get(auth.sessionCookieName);
 
 	if (!sessionToken) {
@@ -24,47 +26,30 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 	event.locals.user = user;
 	event.locals.session = session;
 	return resolve(event);
-};
+}
 
-export const handle: Handle = async ({ event, resolve }) => {
-    const { url, cookies, locals } = event;
+const handleConfig: Handle = async ({ event, resolve }) => {
+	if (event.url.pathname.startsWith('/admin')) {
+		return resolve(event);
+	}
 
-    if (url.pathname === "/reader/checker" || url.pathname.startsWith("/api/")) {
-        return await resolve(event);
+    const readerId = event.cookies.get("reader_id");
+    if (!readerId) {
+        return resolve(event);
     }
 
-    let mode = locals.config?.mode.toLowerCase();
-	if (mode) {
-        if (url.pathname === "/" || url.pathname.endsWith(mode)) {
-            return await resolve(event);
-        } else {
-            redirect(303, "/reader/" + mode);
-        }
-    }
+    const [ config ] = await db.select({
+		id: table.reader.id,
+        mode: table.reader.mode,
+        location: table.reader.location,
+    }).from(table.reader).where(eq(table.reader.id, readerId));
 
-    const readerId = cookies.get("id");
-    if (!readerId) { // unregistered device
-        if (url.pathname === "/") {
-            return await resolve(event);
-        } else {
-            redirect(303, "/reader/checker");
-        }
-    }
+	if (config) {
+		event.locals.config = config;
+	} else {
+		event.cookies.delete("reader_id", { path: "/" });
+	}
+    return resolve(event);
+}
 
-	const row = await db.select().from(table.reader).where(eq(table.reader.id, readerId));
-    if (!row.length) { // device no longer valid? has cookie but not in db
-        redirect(303, "/reader/checker");
-    }
-
-    // do something with config
-    const { id, ...config } = row[0];
-    locals.config = config;
-    mode = config.mode.toLowerCase();
-
-    if (url.pathname === "/" || url.pathname.endsWith(mode)) {
-        return await resolve(event);
-    } else {
-        redirect(303, "/reader/" + mode);
-    }
-
-};
+export const handle = sequence(handleAuth, handleConfig);
