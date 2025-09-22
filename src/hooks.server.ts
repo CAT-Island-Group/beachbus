@@ -31,6 +31,7 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 const handleConfig: Handle = async ({ event, resolve }) => {
 	const readerId = event.cookies.get("reader_id");
     if (!readerId) {
+		event.locals.config = null;
         return resolve(event);
     }
 

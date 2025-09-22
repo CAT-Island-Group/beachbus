@@ -8,7 +8,7 @@ declare global {
 				id: string,
 				mode: import('$lib/consts').READER_MODE,
 				location: import('$lib/consts').BUS_STOP,
-			} | undefined;
+			} | null;
 			user: import('$lib/server/auth').SessionValidationResult['user'];
 			session: import('$lib/server/auth').SessionValidationResult['session']
 		}
