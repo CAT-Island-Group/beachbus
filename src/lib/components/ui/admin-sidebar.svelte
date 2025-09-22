@@ -2,6 +2,7 @@
     import { page } from "$app/state";
     import * as Sidebar from "$lib/components/ui/sidebar/index.js";
     import type { ComponentProps } from "svelte";
+    import Button from "./button/button.svelte";
 
     let { ...restProps }: ComponentProps<typeof Sidebar.Root> = $props()
 
@@ -48,4 +49,9 @@
             </Sidebar.GroupContent>
         </Sidebar.Group>
     </Sidebar.Content>
+    <Sidebar.Footer>
+        <form method="POST" action="?/login/logout" class="w-full flex flex-col">
+            <Button>Sign Out</Button>
+        </form>
+    </Sidebar.Footer>
 </Sidebar.Root>

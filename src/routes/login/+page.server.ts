@@ -49,6 +49,15 @@ export const actions = {
 			.where(eq(table.user.id, user.id));
 
 		return redirect(302, '/admin');
+	},
+	logout: async (event) => {
+		if (!event.locals.session) {
+			return fail(401);
+		}
+		await auth.invalidateSession(event.locals.session.id);
+		auth.deleteSessionTokenCookie(event);
+
+		return redirect(302, '/login');
 	}
 }
 

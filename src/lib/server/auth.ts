@@ -6,8 +6,6 @@ import { db } from '$lib/server/db';
 import * as table from '$lib/server/db/schema';
 import { getRequestEvent } from '$app/server';
 
-const DAY_IN_MS = 1000 * 60 * 60 * 24;
-
 export const sessionCookieName = 'auth-session';
 
 export function generateSessionToken() {
@@ -20,7 +18,7 @@ export async function createSession(token: string, userId: string) {
 	const session: table.Session = {
 		id: sessionId,
 		userId,
-		expiresAt: new Date(Date.now() + DAY_IN_MS * 30)
+		expiresAt: new Date(Date.now() + 1000 * 60 * 60)
 	};
 
 	await db.insert(table.session).values(session);
@@ -53,10 +51,10 @@ export async function validateSessionToken(token: string) {
 		return { session: null, user: null };
 	}
 
-	const renewSession = Date.now() >= session.expiresAt.getTime() - DAY_IN_MS * 15;
+	const renewSession = Date.now() >= session.expiresAt.getTime() - 1000 * 60 * 30;
 
 	if (renewSession) {
-		session.expiresAt = new Date(Date.now() + DAY_IN_MS * 30);
+		session.expiresAt = new Date(Date.now() + 1000 * 60 * 60);
 		await db.update(table.session)
 			.set({ expiresAt: session.expiresAt })
 			.where(eq(table.session.id, session.id));
