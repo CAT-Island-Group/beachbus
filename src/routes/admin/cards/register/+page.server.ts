@@ -10,7 +10,7 @@ export const load = async () => {
 }
 
 export const actions = {
-    activation: async ({ request, locals }) => {
+    register: async ({ request, locals }) => {
         if (!locals.user) {
             return fail(401);
         }

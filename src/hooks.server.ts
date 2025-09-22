@@ -29,11 +29,7 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 }
 
 const handleConfig: Handle = async ({ event, resolve }) => {
-	if (event.url.pathname.startsWith('/admin')) {
-		return resolve(event);
-	}
-
-    const readerId = event.cookies.get("reader_id");
+	const readerId = event.cookies.get("reader_id");
     if (!readerId) {
         return resolve(event);
     }

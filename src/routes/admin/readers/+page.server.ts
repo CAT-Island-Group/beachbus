@@ -5,7 +5,7 @@ import { asc, eq } from "drizzle-orm";
 import { READER_MODES, BUS_STOPS, type READER_MODE, type BUS_STOP } from "$lib/consts";
 import { requireLogin } from "$lib/server/auth.js";
 
-export const load = async ({ parent, locals }) => {
+export const load = async ({ locals }) => {
     const user = requireLogin();
 
     return {
@@ -42,17 +42,9 @@ export const actions = {
         };
 
         [{ readerId }] = await db.insert(table.reader)
-            .values({
-                ...(readerId && { readerId }),
-                ...reader
-            }).onConflictDoUpdate({
-                target: [
-                    table.reader.mode,
-                    table.reader.location,
-                    table.reader.createdBy
-                ],
-                set: reader
-            }).returning({ readerId: table.reader.id });
+            .values({ ...(readerId && { readerId }), ...reader })
+            .onConflictDoUpdate({ target: table.reader.id, set: reader })
+            .returning({ readerId: table.reader.id });
 
         cookies.set('reader_id', readerId, {
             path: '/',
