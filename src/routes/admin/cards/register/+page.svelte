@@ -39,8 +39,8 @@
     onDestroy(() => nfc.stop())
 </script>
 
-<div class="max-w-100 mx-auto rounded-lg shadow-lg">
-    <div class="w-full py-8 p-x4 flex flex-col items-center gap-8">
+<div class="w-90 mx-auto rounded-lg shadow-lg">
+    <div class="py-8 p-x4 flex flex-col items-center gap-8">
         <h1 class="border-b border-sky-600 text-sky-600 text-lg font-bold">Registration</h1>
         <div class="relative flex justify-center items-center size-40">
             {#if nfc.isPending}

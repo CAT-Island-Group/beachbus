@@ -41,7 +41,7 @@
     <span class="text-gray-400 font-medium">{config.location}</span>
 </header>
 <main class="pt-20 px-8 pb-8 flex justify-center align-center">
-    <div class="max-w-100 h-full rounded-lg shadow-lg">
+    <div class="w-90 h-full rounded-lg shadow-lg">
         <div class="w-full py-8 px-4 flex flex-col items-center gap-8">
             <h2 class="border-b border-sky-600 text-sky-600 text-xl font-bold">{config.mode}</h2>
             <div class="relative flex justify-center items-center size-40">

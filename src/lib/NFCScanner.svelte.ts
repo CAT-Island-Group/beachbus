@@ -1,23 +1,20 @@
 export class NFCScanner {
     #ndef: NDEFReader | null;
-    #controller: AbortController;
-    #signal: AbortSignal;
+    #controller: AbortController | null;
     isNFC = $state(false);
     isActive = $state(false);
     isPending = $state(false);
     error = $state(false);
 
     constructor(handler: (uid?: string) => Promise<void>) {
-        this.#controller = new AbortController();
-        this.#signal = this.#controller.signal;
+        this.#controller = null;
 
-        if ("NDEFReader" in window) {
-            this.isNFC = true;
-        } else {
+        if (!("NDEFReader" in window)) {
             this.#ndef = null;
             return;
         }
-
+        
+        this.isNFC = true;
         this.#ndef = new NDEFReader();
 
         this.#ndef.onreading = async (event) => {
@@ -42,7 +39,8 @@ export class NFCScanner {
         if (!this.#ndef || this.isActive) return;
 
         try {
-            await this.#ndef.scan({ signal: this.#signal });
+            this.#controller = new AbortController();
+            await this.#ndef.scan({ signal: this.#controller.signal });
             this.isActive = true;
         } catch (error) {
             console.error(error);
@@ -52,7 +50,9 @@ export class NFCScanner {
     stop() {
         if (!this.#ndef || !this.isActive) return;
 
-        this.#controller.abort();
+        if (this.#controller) {
+            this.#controller.abort();
+        }
         this.isActive = false;
         this.isPending = false;
     }
