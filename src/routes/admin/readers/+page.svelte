@@ -4,12 +4,12 @@
     import { READER_MODES, BUS_STOPS } from "$lib/consts";
 
     let { data } = $props();
-    let reader_mode = $state(data.config?.mode ?? "");
-    let reader_location = $state(data.config?.location ?? "");
+    let reader_mode = $state("");
+    let reader_location = $state("");
 </script>
 
 <main class="w-full p-4">
-    <form id="register" method="POST" action="?/register" use:enhance></form>
+    <form id="register" method="POST" action="?/register"></form>
     <Table.Root class="w-full">
         <Table.Header>
             <Table.Row>

@@ -42,7 +42,7 @@ export const actions = {
         };
 
         [{ readerId }] = await db.insert(table.reader)
-            .values({ ...(readerId && { readerId }), ...reader })
+            .values({ ...(readerId && { id: readerId }), ...reader })
             .onConflictDoUpdate({ target: table.reader.id, set: reader })
             .returning({ readerId: table.reader.id });
 
